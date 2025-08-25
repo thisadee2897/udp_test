@@ -1,19 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'udp_listener.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+        appBar: AppBar(title: const Text("ESP32 Scale Demo")),
+        body: const WeightScreen(),
+      ),
+    );
+  }
+}
+
+class WeightScreen extends ConsumerWidget {
+  const WeightScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // เรียกใช้งาน UDP Listener
+    ref.watch(udpListenerProvider);
+
+    final weight = ref.watch(weightProvider);
+    return Center(
+      child: Text(
+        "${weight.toStringAsFixed(2)} kg",
+        style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
       ),
     );
   }
